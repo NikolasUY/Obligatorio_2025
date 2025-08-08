@@ -1,1 +1,62 @@
-esto es una prueba
+---
+- name: Configurar servidor NFS en CentOS
+  hosts: centos  # Se ejecuta solo en hosts del grupo centos
+  become: yes    # Ejecuta tareas como root
+
+  # Define la ruta del directorio compartido
+  vars_files:
+    - ../inventarios/desarrollo/group_vars/variables_centos.yaml
+
+  tasks:
+    # Tarea 1: Instalar paquete NFS
+    - name: Instalar paquete nfs-utils
+      yum:
+        name: nfs-utils
+        state: present
+      notify:
+        - Habilitar servicio NFS  # Llama al handler si hay cambios
+
+    # Tarea 2: Configurar firewall
+    - name: Permitir servicio NFS en firewall
+      firewalld:
+        service: nfs
+        permanent: yes  # Persiste después de reinicio
+        state: enabled
+      notify:
+        - Recargar firewall
+
+    # Tarea 3: Crear directorio compartido
+    - name: Crear directorio compartido
+      file:
+        path: "{{ nfs_directorio }}"  # Usa la variable definida
+        state: directory
+        owner: nobody
+        group: nobody
+        mode: '0777'  # Permisos completos
+
+    # Tarea 4: Configurar exportación NFS
+    - name: Configurar exportación NFS
+      lineinfile:
+        path: /etc/exports
+        line: "{{ nfs_directorio }} *(rw,sync,no_root_squash)"
+        state: present
+      notify:
+        - Recargar exportaciones NFS
+
+  handlers:
+    # Handler 1: Iniciar servicio NFS
+    - name: Habilitar servicio NFS
+      service:
+        name: nfs-server
+        state: started
+        enabled: yes  # Para que inicie al arranque
+
+    # Handler 2: Recargar reglas del firewall
+    - name: Recargar firewall
+      service:
+        name: firewalld
+        state: reloaded
+
+    # Handler 3: Aplicar cambios en exports
+    - name: Recargar exportaciones NFS
+      command: exportfs -ra  # Comando para recargar config NFS
