@@ -1,0 +1,26 @@
+Tarea 5: Preguntas teóricas
+
+1. ¿Qué es Ansible?
+Es una herramienta de automatización IT. Permite instalar software, configurar servidores, administrar usuarios, etc.
+Una de sus características es que es un motor open source, que se puede utilizar para instalar software automatizar tareas cotidianas, configuraciones  de elementos de infraestructura y red. 
+
+2. ¿Qué es un playbook?
+Es un archivo YAML que describe tareas automatizadas a ejecutar sobre los nodos.
+Se utiliza para organizar los procesos de TI, un playbook en si es un archivo .YAML el cual contiene por lo menos un play , donde sirve para definir el estado deseado de un sistema o servicio. 
+Se puede agregar que son conjuntos ordenados de tareas , y se ejecuta desde el archivo de inventario de ansible.
+
+3. ¿Qué contiene un inventario?
+ Una lista de hosts agrupados, con IPs e información sobre como conectarse a los mismos 
+Sus componentes principales vistos en clase: 
+Hosts, grupos, variables, conexiones.  El formato de este archivo puede ser “inventario.ini”
+
+4. ¿Qué es un módulo?
+   Un bloque de funcionalidad, por ejemplo: `ping`, `apt`, `service`, etc.
+Son pequeños programas denominados módulos, Ansible, se conecta a los nodos o hots y les inserta estos módulos. Los módulos se utilizan para realizar tareas de automatización en Ansible.  
+Ansible ya viene con módulos integrados, lo que ayuda  a automatizar tareas o también se pueden escribir nuevos si el módulo no existe. 
+
+5. Ventajas de Ansible
+No requiere agente.
+Usa SSH.
+Fácil de leer y mantener.
+
