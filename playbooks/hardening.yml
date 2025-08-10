@@ -6,44 +6,42 @@
   tasks:
     # Tarea 1: Actualizar todos los paquetes
     - name: Actualizar sistema
-      apt:
-        update_cache: yes  # Equivalente a apt update
-        upgrade: dist      # Equivalente a apt upgrade
-      notify:
-        - Reiniciar sistema  # Llama al handler si hay actualizaciones
+      ansible.builtin.apt:
+        state: latest
+        update_cache: true  # Equivalente a apt update
+        upgrade: dist #instala las actualizaciones de todos los paquetes equivale a sudo apt upgrade -y
+      notify: Reiniciar sistema  # Llama al handler si hay actualizaciones
 
     # Tarea 2: Configurar UFW
     - name: Configurar firewall UFW
-      ufw:
+      community.general.ufw:
         rule: allow
         name: OpenSSH
         state: enabled  # Habilita UFW y solo permite SSH
 
     # Tarea 3: Configurar SSH seguro
     - name: Deshabilitar login root
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: "^#?PermitRootLogin"
-        line: "PermitRootLogin no"  # Deshabilita login como root
-      notify:
-        - Reiniciar SSH  # Llama al handler si hay cambios
+        regexp: '^#?PermitRootLogin'
+        line: PermitRootLogin no  # Deshabilita login como root
+      notify: Reiniciar SSH  # Llama al handler si hay cambios
 
     - name: Forzar autenticación por clave
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: "^#?PasswordAuthentication"
-        line: "PasswordAuthentication no"  # Solo permite claves SSH
-      notify:
-        - Reiniciar SSH
+        regexp: '^#?PasswordAuthentication'
+        line: PasswordAuthentication no  # Solo permite claves SSH
+      notify: Reiniciar SSH
 
     # Tarea 4: Instalar fail2ban
     - name: Instalar fail2ban
-      apt:
+      ansible.builtin.apt:
         name: fail2ban
         state: present  # Instala el paquete
 
     - name: Habilitar fail2ban
-      service:
+      ansible.builtin.service:
         name: fail2ban
         state: started
         enabled: yes  # Para que inicie al arranque
@@ -51,10 +49,10 @@
   handlers:
     # Handler 1: Reiniciar sistema después de actualizaciones
     - name: Reiniciar sistema
-      reboot:  # Módulo especial para reinicios
+      ansible.builtin.reboot: #reiniciar sistema
 
     # Handler 2: Reiniciar servicio SSH
     - name: Reiniciar SSH
-      service:
+      ansible.builtin.systemd_service:
         name: ssh  # Nombre del servicio en Ubuntu
         state: restarted
