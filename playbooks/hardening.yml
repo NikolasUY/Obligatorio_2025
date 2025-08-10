@@ -1,2 +1,60 @@
-test
+---
+- name: Aplicar hardening en servidores Ubuntu
+  hosts: ubuntu  # Se ejecuta solo en hosts del grupo ubuntu
+  become: yes    # Ejecuta tareas como root
 
+  tasks:
+    # Tarea 1: Actualizar todos los paquetes
+    - name: Actualizar sistema
+      apt:
+        update_cache: yes  # Equivalente a apt update
+        upgrade: dist      # Equivalente a apt upgrade
+      notify:
+        - Reiniciar sistema  # Llama al handler si hay actualizaciones
+
+    # Tarea 2: Configurar UFW
+    - name: Configurar firewall UFW
+      ufw:
+        rule: allow
+        name: OpenSSH
+        state: enabled  # Habilita UFW y solo permite SSH
+
+    # Tarea 3: Configurar SSH seguro
+    - name: Deshabilitar login root
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#?PermitRootLogin"
+        line: "PermitRootLogin no"  # Deshabilita login como root
+      notify:
+        - Reiniciar SSH  # Llama al handler si hay cambios
+
+    - name: Forzar autenticación por clave
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#?PasswordAuthentication"
+        line: "PasswordAuthentication no"  # Solo permite claves SSH
+      notify:
+        - Reiniciar SSH
+
+    # Tarea 4: Instalar fail2ban
+    - name: Instalar fail2ban
+      apt:
+        name: fail2ban
+        state: present  # Instala el paquete
+
+    - name: Habilitar fail2ban
+      service:
+        name: fail2ban
+        state: started
+        enabled: yes  # Para que inicie al arranque
+
+  handlers:
+    # Handler 1: Reiniciar sistema después de actualizaciones
+    - name: Reiniciar sistema
+      reboot:  # Módulo especial para reinicios
+
+    # Handler 2: Reiniciar servicio SSH
+    - name: Reiniciar SSH
+      service:
+        name: ssh  # Nombre del servicio en Ubuntu
+        state: restarted
