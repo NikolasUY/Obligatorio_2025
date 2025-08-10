@@ -46,17 +46,17 @@
   handlers:
     # Handler 1: Iniciar servicio NFS
     - name: Habilitar servicio NFS
-      service:
+      ansible.builtin.service:
         name: nfs-server
         state: started
         enabled: yes  # Para que inicie al arranque
 
     # Handler 2: Recargar reglas del firewall
     - name: Recargar firewall
-      service:
+      ansible.posix.firewalld:
         name: firewalld
         state: reloaded
 
     # Handler 3: Aplicar cambios en exports
     - name: Recargar exportaciones NFS
-      command: exportfs -ra  # Comando para recargar config NFS
+      ansible.builtin.command: exportfs -ra  # Comando para recargar config NFS
