@@ -1,7 +1,0 @@
----
-# Variables para el playbook hardening.yml
-ufw_allow_service: OpenSSH
-sshd_config:
-  PermitRootLogin: "no"
-  PasswordAuthentication: "no"
-fail2ban_package: fail2ban

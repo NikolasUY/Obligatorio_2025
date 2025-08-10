@@ -2,5 +2,4 @@
 # Variables para el playbook nfs_setup.yaml
 
 nfs_directorio: /var/nfs_shared
-nfs_opciones: "*(rw,sync,no_root_squash)"
-servicio_fw: nfs
+
