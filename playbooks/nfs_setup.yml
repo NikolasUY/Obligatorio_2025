@@ -3,7 +3,7 @@
   hosts: centos  # Se ejecuta solo en hosts del grupo centos
   become: yes    # Ejecuta tareas como root
 
-  # Define la ruta del directorio compartido
+  # Define la ruta del archivo de variables
   vars_files:
     - ../inventarios/desarrollo/group_vars/variables_centos.yaml
 
